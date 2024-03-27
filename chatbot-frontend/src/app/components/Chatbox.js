@@ -34,6 +34,7 @@ function Chatbox() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ prompt: userMessage, history: null }), // history thing might be too complicated
+      credentials: "include", // Include cookies with the request
     });
     const data = await response.json();
     return data.response;
