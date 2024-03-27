@@ -11,7 +11,7 @@ function Chatbox() {
 
   // Set initial message to display on page load
   const initialMessage = {
-    text: "Wie kann ich Ihnen behilflich sein?",
+    text: "Hello! How can I help you today?",
     sender: "bot",
   };
   // State of all sent messages
