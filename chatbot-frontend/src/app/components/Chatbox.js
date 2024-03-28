@@ -1,21 +1,36 @@
 "use client";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
 
-function Chatbox() {
+Chatbox.propTypes = {
+  chatType: PropTypes.string.isRequired,
+};
+
+function Chatbox({ chatType }) {
   /**
    *@description: Chatbox component
    */
 
   // Set initial message to display on page load
-  const initialMessage = {
-    text: "Hello! How can I help you today?",
+
+  const initialMessageSushi = {
+    text: "Hello! I know everything about sushi restaurants! How can I help you?",
     sender: "bot",
   };
+
+  const initialMessageParking = {
+    text: "Hello! I know everything about parking! How can I help you?",
+    sender: "bot",
+  };
+
   // State of all sent messages
-  const [messages, setMessages] = useState([initialMessage]);
+  const [messagesSushi, setMessagesSushi] = useState([initialMessageSushi]);
+  const [messagesParking, setMessagesParking] = useState([
+    initialMessageParking,
+  ]);
+
   // State of newly typed in message
   const [newMessage, setNewMessage] = useState("");
 
@@ -28,7 +43,7 @@ function Chatbox() {
   useEffect(() => {
     //Scroll to bottom of chatbox when new messages are added
     chatboxRef.current.scrollTop = chatboxRef.current.scrollHeight;
-  }, [messages]);
+  }, [messagesSushi, messagesParking]);
 
   const fetchResponse = async (userMessage) => {
     /**
@@ -38,9 +53,13 @@ function Chatbox() {
 
     // Set loading state to true
     setLoading(true);
+    const endpoint =
+      chatType === "sushi"
+        ? "http://localhost:5000/sushi_chat"
+        : "http://localhost:5000/parking_chat";
 
     // Fetch response from the chatbot server
-    const response = await fetch("http://localhost:5000/chat", {
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +84,9 @@ function Chatbox() {
     if (newMessage.trim() !== "") {
       // Add the user's message to the chat history
       const userMessage = { text: newMessage, sender: "user" };
-      setMessages((prevMessages) => [...prevMessages, userMessage]);
+      if (chatType === "sushi")
+        setMessagesSushi((prevMessages) => [...prevMessages, userMessage]);
+      else setMessagesParking((prevMessages) => [...prevMessages, userMessage]);
 
       // Clear the input field
       setNewMessage("");
@@ -75,7 +96,10 @@ function Chatbox() {
         try {
           const botResponse = await fetchResponse(newMessage);
           const botMessage = { text: botResponse, sender: "bot" };
-          setMessages((prevMessages) => [...prevMessages, botMessage]);
+          if (chatType === "sushi") {
+            setMessagesSushi((prevMessages) => [...prevMessages, botMessage]);
+          } else
+            setMessagesParking((prevMessages) => [...prevMessages, botMessage]);
         } catch (error) {
           console.error("Error fetching bot response:", error);
         }
@@ -98,22 +122,43 @@ function Chatbox() {
         ref={chatboxRef}
         className="md:p-6 p-2 rounded shadow-md w-full h-screen max-h-[65vh] md:max-h-screen overflow-y-auto mb-4"
       >
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-2 p-4 ${
-              msg.sender === "user" ? "text-right" : "text-left"
-            } animate-fade-in`}
-          >
-            <span
-              className={`inline-block md:px-4 px-2 md:py-2 py-1 rounded md:text-lg lg:text-xl ${
-                msg.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-300"
-              }`}
-            >
-              {msg.text}
-            </span>
-          </div>
-        ))}
+        {chatType === "sushi"
+          ? messagesSushi.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-2 p-4 ${
+                  msg.sender === "user" ? "text-right" : "text-left"
+                } animate-fade-in`}
+              >
+                <span
+                  className={`inline-block md:px-4 px-2 md:py-2 py-1 rounded md:text-lg lg:text-xl ${
+                    msg.sender === "user"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  {msg.text}
+                </span>
+              </div>
+            ))
+          : messagesParking.map((msg, index) => (
+              <div
+                key={index}
+                className={`mb-2 p-4 ${
+                  msg.sender === "user" ? "text-right" : "text-left"
+                } animate-fade-in`}
+              >
+                <span
+                  className={`inline-block md:px-4 px-2 md:py-2 py-1 rounded md:text-lg lg:text-xl ${
+                    msg.sender === "user"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-300"
+                  }`}
+                >
+                  {msg.text}
+                </span>
+              </div>
+            ))}
         {loading && (
           <div className="animate-fade-in text-left mb-2 p-4">
             <span className="inline-block md:px-4 px-2 md:py-2 py-1 rounded md:text-lg lg:text-xl md:w-32 w-28 bg-gray-300 typing-animation">

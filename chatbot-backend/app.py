@@ -6,7 +6,7 @@ from flask_session import Session
 import os
 import shutil
 from dotenv import load_dotenv
-from utils import prepare_sushi_context
+from utils import prepare_sushi_context, prepare_parking_context
 
 
 
@@ -35,22 +35,22 @@ client = openai.OpenAI(api_key=openai.api_key)
 
 
 
-@app.route('/chat', methods=['POST'])
-def chat():
+@app.route('/sushi_chat', methods=['POST'])
+def sushi_chat():
 
     # Get the user message from the request
     user_message = request.json.get('prompt')
 
     # Initialize or retrieve the existing conversation history
-    if 'history' not in session:
-        print("history not in session")
-        session['history'] = []
-    history = session['history']
+    if 'sushi_history' not in session:
+        print("sushi history not in session")
+        session['sushi_history'] = []
+    sushi_history = session['sushi_history']
 
     # get sushi context
     sushi_context = prepare_sushi_context()
     # Include the sushi context and the user message in the messages list
-    messages = sushi_context + history + [{"role": "user", "content": user_message}]
+    messages = sushi_context + sushi_history + [{"role": "user", "content": user_message}]
     # print("history: ", history)
     # print("whole message: ", messages)
     try:
@@ -67,9 +67,9 @@ def chat():
             completion_text = 'No response generated.'  
 
         # Update the conversation history and save to session
-        history.append({"role": "system", "content": user_message})
-        history.append({"role": "system", "content": completion_text})
-        session['history'] = history
+        sushi_history.append({"role": "system", "content": user_message})
+        sushi_history.append({"role": "system", "content": completion_text})
+        session['sushi_history'] = sushi_history
         session.modified = True
 
         # Return generated response      
@@ -78,6 +78,43 @@ def chat():
     # Handle exceptions
     except Exception as e:
         return jsonify(error=str(e)), 500
+
+
+
+@app.route('/parking_chat', methods=['POST'])
+def parking_chat():
+    user_message = request.json.get('prompt')
+
+    if 'parking_history' not in session:
+        session['parking_history'] = []
+    parking_history = session['parking_history']
+
+    # Get parking context
+    parking_context = prepare_parking_context()
+    messages = parking_context + parking_history + [{"role": "user", "content": user_message}]
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0.2,
+            frequency_penalty=0.5,
+        )
+        if response.choices:
+            completion_text = response.choices[0].message.content
+        else:
+            completion_text = 'No response generated.'
+
+        # Update the conversation history for parking and save to session
+        parking_history.append({"role": "system", "content": user_message})
+        parking_history.append({"role": "system", "content": completion_text})
+        session['parking_history'] = parking_history
+        session.modified = True
+
+        return jsonify(response=completion_text)
+    except Exception as e:
+        return jsonify(error=str(e)), 500
+
 
 
 if __name__ == '__main__':

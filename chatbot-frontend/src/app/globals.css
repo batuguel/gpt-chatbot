@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .home-container {
-  @apply flex flex-col bg-zinc-800 gap-4 min-h-screen items-center justify-between md:py-20 py-8 h-screen w-screen overflow-hidden;
+  @apply flex flex-col bg-zinc-800 gap-2 min-h-screen items-center justify-between md:py-20 py-8 h-screen w-screen overflow-hidden;
 }
 
 @layer utilities {
