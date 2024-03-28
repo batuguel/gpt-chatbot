@@ -56,7 +56,9 @@ def chat():
     try:
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=messages
+            messages=messages,
+            temperature=0.2,
+            frequency_penalty=0.5,
         )
         # Access completions text
         if response.choices:

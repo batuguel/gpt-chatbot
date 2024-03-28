@@ -6,7 +6,7 @@ with open('sushi.json', 'r') as file:
 
 # Prepare the context messages for the sushi data
 def prepare_sushi_context():
-    context_messages = []
+    context_messages = [{"role": "system", "content": "You are a knowledgeable assistant that can provide information about sushi restaurants in a conversational way."}]
     for restaurant in sushi_data:
         # Basic information
         title = restaurant.get('title', 'A sushi restaurant')
