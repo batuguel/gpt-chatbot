@@ -19,6 +19,9 @@ function Chatbox() {
   // State of newly typed in message
   const [newMessage, setNewMessage] = useState("");
 
+  //State for loading response
+  const [loading, setLoading] = useState(false);
+
   //Set ref for automatic scrolling
   const chatboxRef = useRef();
 
@@ -28,6 +31,15 @@ function Chatbox() {
   }, [messages]);
 
   const fetchResponse = async (userMessage) => {
+    /**
+     * @description:
+     *  Get response for user message from the backend
+     */
+
+    // Set loading state to true
+    setLoading(true);
+
+    // Fetch response from the chatbot server
     const response = await fetch("http://localhost:5000/chat", {
       method: "POST",
       headers: {
@@ -37,6 +49,10 @@ function Chatbox() {
       credentials: "include", // Include cookies with the request
     });
     const data = await response.json();
+
+    // Set loading state to false
+    setLoading(false);
+
     return data.response;
   };
 
@@ -98,6 +114,13 @@ function Chatbox() {
             </span>
           </div>
         ))}
+        {loading && (
+          <div className="animate-fade-in text-left mb-2 p-4">
+            <span className="inline-block md:px-4 px-2 md:py-2 py-1 rounded md:text-lg lg:text-xl md:w-32 w-28 bg-gray-300 typing-animation">
+              Thinking
+            </span>
+          </div>
+        )}
       </div>
       <div className="flex items-center w-full px-4 gap-4">
         <textarea
