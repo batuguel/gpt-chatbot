@@ -30,7 +30,15 @@ The backend is developed with Flask. To get it up and running, follow these step
     source venv/bin/activate
 ```
 
-3. Start the Flask application
+3. Install necessary packages
+
+```bash
+    pip install -r requirements.txt
+```
+
+4. **Create .env file** with your OpenAI API key and name it OPENAI_API_KEY
+
+5. Start the Flask application
 
 ```bash
     flask run
@@ -59,3 +67,9 @@ The frontend is built with Next.js and styled using Tailwind CSS. To start the f
 ```
 
 Now, your frontend should be accessible at http://localhost:3000, and your backend should be running on http://localhost:15000.
+
+### Experiments
+
+The experiments directory contains notebooks to test new approaches or code snippets and functions before implementing.
+
+To run embeddings.ipynb, another .env file needs to be created with OPEN_API_KEY. You can also copy your .env file from the chatbot-backend directory and paste it in here.
