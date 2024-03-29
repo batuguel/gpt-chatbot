@@ -66,7 +66,7 @@ The frontend is built with Next.js and styled using Tailwind CSS. To start the f
     npm run dev
 ```
 
-Now, your frontend should be accessible at http://localhost:3000, and your backend should be running on http://localhost:15000.
+Now, your frontend should be accessible at http://localhost:3000, and your backend should be running on http://localhost:5000.
 
 ### Experiments
 
